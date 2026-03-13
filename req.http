@@ -1,0 +1,13 @@
+###
+
+# @timeout 600
+POST http://localhost:11434/api/generate
+Content-Type: application/json
+
+{
+  "model": "deepseek-r1:1.5b",
+  "prompt": "The best University in Russia?",
+  "stream": false
+}
+
+###

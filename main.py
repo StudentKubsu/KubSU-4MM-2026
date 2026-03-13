@@ -1,5 +1,7 @@
 import logging
 import sqlite3
+import requests  # type: ignore
+
 from contextlib import closing
 
 from fastapi import FastAPI
@@ -18,6 +20,10 @@ class PageView(BaseModel):
     lang: str
     text: str
     timestamp: str
+
+
+class LlmRequest(BaseModel):
+    prompt: str
 
 
 def init_db():
@@ -91,3 +97,18 @@ def page_view(page_view: PageView):
     logger.info("Page view saved to database")
 
     return {"status": "ok"}
+
+
+@app.post("/my-chat-gpt")
+def llm_proxy(req: LlmRequest):
+    response = requests.post(
+        "http://localhost:11434/api/generate",
+        json={
+            "model": "deepseek-r1:1.5b",
+            "prompt": req.prompt,
+            "system": "Answer in English",
+            "temperature": 0.1,
+            "stream": False,
+        },
+    )
+    return response.json().get("response")
