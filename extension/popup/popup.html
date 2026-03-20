@@ -1,5 +1,23 @@
+<!DOCTYPE html>
 <html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
 <body>
-<h1>Hello, World!</h1>
+  <div class="container">
+    <h1>История браузера</h1>
+
+    <button id="historyButton" class="history-btn">
+      Просмотр сводки об истории
+    </button>
+
+    <div id="response" class="response" style="display: none;">
+      <div class="loading-spinner"></div>
+      <div class="response-content"></div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
 </body>
 </html>

@@ -12,6 +12,15 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 DB_PATH = "page_views.db"
+PROMPT_DEFAULT = """
+Собери информацию о посещённых сайтах, исходя из их title. Сформулируй мои интересы.
+
+Проанализируй список заголовков и структурируй ответ:
+1. Основные сферы интересов (перечисли 2-4 ключевые категории)
+2. Краткий вывод (1 предложение)
+
+Список titles:
+"""
 
 
 class PageView(BaseModel):
@@ -99,15 +108,21 @@ def page_view(page_view: PageView):
     return {"status": "ok"}
 
 
-@app.post("/my-chat-gpt")
-def llm_proxy(req: LlmRequest):
+@app.get("/history")
+def history():
+    with closing(sqlite3.connect(DB_PATH)) as conn:
+        rows = conn.execute("SELECT title FROM page_views ORDER BY id ASC").fetchall()
+        titles = ", ".join(row[0] for row in rows).strip()
+
+    logger.info("Title:     %s", titles)
+
     response = requests.post(
         "http://localhost:11434/api/generate",
         json={
             "model": "deepseek-r1:1.5b",
-            "prompt": req.prompt,
-            "system": "Answer in English",
-            "temperature": 0.1,
+            "prompt": PROMPT_DEFAULT + titles,
+            "system": "Отвечай на русском языке. Будь кратким, дружелюбным и структурированным.",
+            "temperature": 0.3,
             "stream": False,
         },
     )
