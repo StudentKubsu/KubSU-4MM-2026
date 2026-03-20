@@ -9,5 +9,3 @@ Content-Type: application/json
   "prompt": "The best University in Russia?",
   "stream": false
 }
-
-###
